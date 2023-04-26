@@ -5,16 +5,22 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 
 public class J2J {
-
-    String testJson = "{}";
     
     public J2J() {
         
     }
 
     public static void convert(String json) {
+        System.out.println(json);
+        try {
+            Bucket bucket = new Bucket(json);
+        bucket.print();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         
     }
 
