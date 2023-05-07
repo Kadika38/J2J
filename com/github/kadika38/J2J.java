@@ -16,7 +16,7 @@ public class J2J {
     public static void convert(String json) {
         System.out.println(json);
         try {
-            Bucket bucket = new Bucket(json);
+            Bucketv1 bucket = new Bucketv1(json);
         bucket.print();
         } catch (Exception e) {
             e.printStackTrace();
