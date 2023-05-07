@@ -22,7 +22,7 @@ private splitJson(string json) {
 
     getKeyValStrings(json, a)
     
-    return a;    
+    return a;
 }
 
 private getKeyValStrings(string json, arraylist a) {
@@ -36,9 +36,7 @@ private getKeyValStrings(string json, arraylist a) {
     add string from first marker to second marker (inclusive on the first, noninclusive on the second) to arraylist
 
     continue iterating through json if final } wasn't found
-    if another " is found:
-        mark its location
-        recursively call getKeyValStrings with a sliced json string from the above marked location to the end of the string, and pass the same arraylist
+        recursively call getKeyValStrings with a sliced json string from the ending marker+1 to the end of the string, and pass the same arraylist
     
     return;
 }
@@ -49,12 +47,11 @@ private addKeyFrom(string s) {
     find next "
         mark that spot
     
-    this.keys.add(string from marker1 to marker 2, uninclusive)
+    this.keys.add(string from marker1 to marker 2, noninclusive)
 }
 
 private addValFrom(string s) {
-    find second "
-    find : after that
+    find first : not within a string
     discover data type:
         options are string, int, boolean, array, object
         if first char is "
@@ -72,7 +69,7 @@ private addValFrom(string s) {
     case string:
         mark first "
         mark second "
-        this.values.add(string from marker1 to marker2 uninclusive)
+        this.values.add(string from marker1 to marker2 noninclusive)
         break;
     case int:
         mark first number location
@@ -92,7 +89,7 @@ private addValFrom(string s) {
         keep iterating
         mark ]
         new arraylist a
-        buildArrayListFrom(string from marker1 to marker2 uninclusive and inclusive respectively, a)
+        buildArrayListFrom(string from marker1 to marker2 noninclusive and inclusive respectively, a)
         this.values.add(that array list ^)
         break;
     case object:
@@ -124,7 +121,7 @@ private buildArrayListFrom(string s, arraylist a) {
     case string:
         mark first "
         mark second "
-        a.add(string from marker1 to marker2 uninclusive)
+        a.add(string from marker1 to marker2 noninclusive)
         break;
     case int:
         mark first number location
@@ -145,7 +142,7 @@ private buildArrayListFrom(string s, arraylist a) {
         keep track of []'s
         mark this array's ]
         new arraylist a
-        buildArrayListFrom(string from marker1 to marker2 uninclusive and inclusive respectively, a)
+        buildArrayListFrom(string from marker1 to marker2 noninclusive and inclusive respectively, a)
         a.add(that array list ^)
         break;
     case object:
@@ -160,7 +157,7 @@ private buildArrayListFrom(string s, arraylist a) {
     
     find next , or final ]
         if next , was found:
-            buildArrayListFrom(string from , uninclusive to end of s, a)
+            buildArrayListFrom(string from , noninclusive to end of s, a)
         else if final ] was found:
             return;
         else throw error

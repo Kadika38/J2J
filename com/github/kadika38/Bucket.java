@@ -50,8 +50,54 @@ public class Bucket {
         // Basic validation has been succeeded, continue splitting the json into key value strings
         ArrayList<String> a = new ArrayList<String>();
 
-        getKeyValueStrings(json, a);
+        getKeyValStrings(json, a);
 
         return a;
+    }
+
+    // Recursively finds the key value strings in JSON and adds them to a passed in ArrayList
+    private void getKeyValStrings(String json, ArrayList<String> a) {
+        // marker1 is the location of first " in the string
+        Integer marker1 = null;
+        // marker2 is the location of the end of this key value string (either an , or an })
+        Integer marker2 = null;
+        // marker2type is true if there is more json, and false if the final } was marked
+        Boolean marker2type = null;
+        // depth is the current depth within inner objects (i.e. {}'s) of the iterator
+        int depth = 0;
+        // self explanatory variable
+        boolean iteratingWithinAString = false;
+
+        for (int i = 0; i < json.length(); i++) {
+            if (marker1 == null) {
+                if ('"' == json.charAt(i) || '\"' == json.charAt(i)) {
+                    marker1 = i;
+                    iteratingWithinAString = !iteratingWithinAString;
+                }
+            } else if (marker2 == null) {
+                if ('"' == json.charAt(i) || '\"' == json.charAt(i)) {
+                    iteratingWithinAString = !iteratingWithinAString;
+                } else if ('{' == json.charAt(i)) {
+                    depth++;
+                } else if ('}' == json.charAt(i)) {
+                    depth--;
+                    if (depth < 0) {
+                        marker2 = i;
+                        marker2type = false;
+                    }
+                } else if (',' == json.charAt(i) && depth == 0 && !iteratingWithinAString) {
+                    marker2 = i;
+                    marker2type = true;
+                }
+            } else if (marker1 != null && marker2 != null) {
+                a.add(json.substring(marker1, marker2));
+                if (marker2type) {
+                    getKeyValStrings(json.substring(marker2, json.length()-1), a);
+                } else {
+                    return;
+                }
+            }
+        }
+
     }
 }
