@@ -1,6 +1,6 @@
 Todo:
-    - addKeyFrom()
-    - addValFrom()
+    - buildArrayListFrom()
+    - mark where to throw errors
 
 Bucket:
 
@@ -43,4 +43,66 @@ private getKeyValStrings(string json, arraylist a) {
         recursively call getKeyValStrings with a sliced json string from the above marked location to the end of the string, and pass the same arraylist
     
     return;
+}
+
+private addKeyFrom(string s) {
+    find first "
+        mark that spot
+    find next "
+        mark that spot
+    
+    this.keys.add(string from marker1 to marker 2, uninclusive)
+}
+
+private addValFrom(string s) {
+    find second "
+    find : after that
+    discover data type:
+        options are string, int, boolean, array
+        if first char is "
+            string
+        if first car is number
+            int
+        if first char is t or f
+            boolean
+        if first char is [
+            array
+        if first char is {
+            object
+
+    switch statement based on data type
+    case string:
+        mark first "
+        mark second "
+        this.values.add(string from marker1 to marker2 uninclusive)
+        break;
+    case int:
+        mark first number location
+        find final number location
+        convert string from marker1 to marker2 to int
+        this.values.add(that int)
+        break;
+    case boolean:
+        if first char is t
+            this.values.add(true)
+        if first char is f
+            this.values.add(false)
+        else throw error
+        break;
+    case array:
+        mark [
+        keep iterating
+        mark ]
+        new arraylist = buildArrayListFrom(string from marker1 to marker2 inclusive)
+        this.values.add(that array list ^)
+        break;
+    case object:
+        mark first {
+        keep iterating
+        keep track of {}'s
+        find this objects }
+        mark that spot
+        new Bucket (string from marker 1 to marker 2)
+        this.values.add(that new bucket)
+        break;
 }
