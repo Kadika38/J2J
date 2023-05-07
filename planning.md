@@ -1,7 +1,5 @@
 Todo:
-    - buildArrayListFrom()
-    - mark where to throw errors
-
+    - parts of addValFrom and buildArrayListFrom are very similar, find a way to create one method that can be used in both to get rid of repetitive code
 Bucket:
 
 keys
@@ -58,7 +56,7 @@ private addValFrom(string s) {
     find second "
     find : after that
     discover data type:
-        options are string, int, boolean, array
+        options are string, int, boolean, array, object
         if first char is "
             string
         if first car is number
@@ -93,7 +91,8 @@ private addValFrom(string s) {
         mark [
         keep iterating
         mark ]
-        new arraylist = buildArrayListFrom(string from marker1 to marker2 inclusive)
+        new arraylist a
+        buildArrayListFrom(string from marker1 to marker2 uninclusive and inclusive respectively, a)
         this.values.add(that array list ^)
         break;
     case object:
@@ -105,4 +104,64 @@ private addValFrom(string s) {
         new Bucket (string from marker 1 to marker 2)
         this.values.add(that new bucket)
         break;
+}
+
+private buildArrayListFrom(string s, arraylist a) {
+    find data type of first item, to do this:
+        options are string, int, boolean, array, object
+        if first char is "
+            string
+        if first car is number
+            int
+        if first char is t or f
+            boolean
+        if first char is [
+            array
+        if first char is {
+            object
+        
+    switch statement based on data type:
+    case string:
+        mark first "
+        mark second "
+        a.add(string from marker1 to marker2 uninclusive)
+        break;
+    case int:
+        mark first number location
+        find final number location
+        convert string from marker1 to marker2 to int
+        a.add(that int)
+        break;
+    case boolean:
+        if first char is t
+            a.add(true)
+        if first char is f
+            a.add(false)
+        else throw error
+        break;
+    case array:
+        mark [
+        keep iterating
+        keep track of []'s
+        mark this array's ]
+        new arraylist a
+        buildArrayListFrom(string from marker1 to marker2 uninclusive and inclusive respectively, a)
+        a.add(that array list ^)
+        break;
+    case object:
+        mark first {
+        keep iterating
+        keep track of {}'s
+        find this objects }
+        mark that spot
+        new Bucket (string from marker 1 to marker 2)
+        a.add(that new bucket)
+        break;
+    
+    find next , or final ]
+        if next , was found:
+            buildArrayListFrom(string from , uninclusive to end of s, a)
+        else if final ] was found:
+            return;
+        else throw error
 }
