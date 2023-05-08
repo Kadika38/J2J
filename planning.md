@@ -56,7 +56,7 @@ private addValFrom(string s) {
         options are string, int, boolean, array, object
         if first char is "
             string
-        if first car is number
+        if first char is number
             int
         if first char is t or f
             boolean
