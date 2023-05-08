@@ -1,2 +1,2 @@
 Todo:
-    IM A TEST
+    - create easy accesibilty and printing
