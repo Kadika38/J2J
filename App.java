@@ -14,7 +14,8 @@ public class App {
         J2J.convert(s); */
 
         Bucket testBucket = new Bucket(getJson());
-        //testBucket.print();
+        System.out.println("PRINTING BUCKET");
+        testBucket.print();
     }
 
     public static String getJson() {

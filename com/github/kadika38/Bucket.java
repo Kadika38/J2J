@@ -14,6 +14,8 @@ public class Bucket {
         values = new ArrayList<Object>();
 
         ArrayList<String> splitJson = splitJson(json);
+        //System.out.println("SPLIT JSON");
+        //System.out.println(splitJson);
 
         for (String s : splitJson) {
             addKeyFrom(s);
@@ -60,6 +62,7 @@ public class Bucket {
 
     // Recursively finds the key value strings in JSON and adds them to a passed in ArrayList
     private void getKeyValStrings(String json, ArrayList<String> a) {
+        System.out.println("Finding key val string in: " + json);
         // marker1 is the location of first " in the string
         Integer marker1 = null;
         // marker2 is the location of the end of this key value string (either an , or an })
@@ -68,7 +71,7 @@ public class Bucket {
         Boolean marker2type = null;
         // depth is the current depth within inner objects (i.e. {}'s) of the iterator
         int depth = 0;
-        // self explanatory variable
+        // self explanatory variables
         boolean iteratingWithinAString = false;
 
         for (int i = 0; i < json.length(); i++) {
@@ -80,9 +83,9 @@ public class Bucket {
             } else if (marker2 == null) {
                 if ('"' == json.charAt(i)) {
                     iteratingWithinAString = !iteratingWithinAString;
-                } else if ('{' == json.charAt(i)) {
+                } else if ('{' == json.charAt(i) || '[' == json.charAt(i)) {
                     depth++;
-                } else if ('}' == json.charAt(i)) {
+                } else if ('}' == json.charAt(i) || ']' == json.charAt(i)) {
                     depth--;
                     if (depth < 0) {
                         marker2 = i;
@@ -100,8 +103,8 @@ public class Bucket {
             System.out.println("Adding to a: " + json.substring(marker1, marker2));
             a.add(json.substring(marker1, marker2));
             if (marker2type) {
-                System.out.println("Recursive call on: " + json.substring(marker2, json.length()-1));
-                getKeyValStrings(json.substring(marker2, json.length()-1), a);
+                System.out.println("Recursive call on: " + json.substring(marker2, json.length()));
+                getKeyValStrings(json.substring(marker2, json.length()), a);
             } else {
                 return;
             }
@@ -218,6 +221,7 @@ public class Bucket {
 
             // case boolean
             case 3:
+                System.out.println("Reads a boolean.");
                 if ('t' == s.charAt(marker2) && 'r' == s.charAt(marker2+1) && 'u' == s.charAt(marker2+2) && 'e' == s.charAt(marker2+3)) {
                     this.values.add(true);
                 } else if ('f' == s.charAt(marker2) && 'a' == s.charAt(marker2+1) && 'l' == s.charAt(marker2+2) && 's' == s.charAt(marker2+3) && 'e' == s.charAt(marker2+4)) {
@@ -316,38 +320,62 @@ public class Bucket {
             throw new Error("Invalid JSON!  Error while reading values within an array.");
         }
 
+        boolean finished = false;
+        Integer nextStarter = null;
         switch (firstItemDataType) {
             // case string
             case 1:
                 Integer stringValEnd = null;
                 for (int i = marker1+1; i < s.length(); i++) {
-                    if ('"' == s.charAt(i)) {
+                    if ('"' == s.charAt(i) && stringValEnd == null) {
                         stringValEnd = i;
-                        break;
+                    } else if (stringValEnd != null) {
+                        //need to find , or ]
+                        if (',' == s.charAt(i)) {
+                            nextStarter = i+1;
+                            break;
+                        } else if (']' == s.charAt(i)) {
+                            finished = true;
+                            break;
+                        }
                     }
                 }
                 if (stringValEnd == null) {
                     throw new Error("Invalid JSON!  Error found while looking for string value within an array.");
                 }
                 a.add(s.substring(marker1+1, stringValEnd));
+                if (!finished) {
+                    buildArrayListFrom(s.substring(nextStarter, s.length()), a);
+                }
                 break;
 
             // case integer
             case 2:
                 Integer intValEnd = null;
-                for (int i = marker1+1; i < s.length(); i++) {
+                for (int i = marker1; i < s.length(); i++) {
                     if (Character.isDigit(s.charAt(i))) {
                         intValEnd = i;
                         continue;
                     } else if (!Character.isDigit(s.charAt(i))) {
-                        break;
+                        //need to find , or ]
+                        if (',' == s.charAt(i)) {
+                            nextStarter = i+1;
+                            break;
+                        } else if (']' == s.charAt(i)) {
+                            finished = true;
+                            break;
+                        }
                     }
                 }
                 if (intValEnd == null) {
+                    System.out.println("Looking for int in: " + s);
                     throw new Error("Invalid JSON!  Error found while looking for integer value within an array.");
                 }
                 try {
                     a.add(Integer.parseInt(s.substring(marker1, intValEnd+1)));
+                    if (!finished) {
+                        buildArrayListFrom(s.substring(nextStarter, s.length()), a);
+                    }
                 } catch (NumberFormatException e) {
                     throw new Error("Error while converting string to integer!");
                 }
@@ -357,10 +385,31 @@ public class Bucket {
             case 3:
                 if ('t' == s.charAt(marker1) && 'r' == s.charAt(marker1+1) && 'u' == s.charAt(marker1+2) && 'e' == s.charAt(marker1+3)) {
                     a.add(true);
+                    for (int i = marker1+4; i < s.length(); i++) {
+                        if (',' == s.charAt(i)) {
+                            nextStarter = i+1;
+                            break;
+                        } else if (']' == s.charAt(i)) {
+                            finished = true;
+                            break;
+                        }
+                    }
                 } else if ('f' == s.charAt(marker1) && 'a' == s.charAt(marker1+1) && 'l' == s.charAt(marker1+2) && 's' == s.charAt(marker1+3) && 'e' == s.charAt(marker1+4)) {
                     a.add(false);
+                    for (int i = marker1+5; i < s.length(); i++) {
+                        if (',' == s.charAt(i)) {
+                            nextStarter = i+1;
+                            break;
+                        } else if (']' == s.charAt(i)) {
+                            finished = true;
+                            break;
+                        }
+                    }
                 } else {
                     throw new Error("Invalid JSON! Error while double checking true/false value within an array.");
+                }
+                if (!finished) {
+                    buildArrayListFrom(s.substring(nextStarter, s.length()), a);
                 }
                 break;
 
@@ -368,9 +417,16 @@ public class Bucket {
             case 4:
                 Integer arrayEndVal = null;
                 for (int i = marker1+1; i < s.length(); i++) {
-                    if (']' == s.charAt(i)) {
+                    if (']' == s.charAt(i) && arrayEndVal == null) {
                         arrayEndVal = i;
-                        break;
+                    } else if (arrayEndVal != null) {
+                        if (',' == s.charAt(i)) {
+                            nextStarter = i+1;
+                            break;
+                        } else if (']' == s.charAt(i)) {
+                            finished = true;
+                            break;
+                        }
                     }
                 }
                 if (arrayEndVal == null) {
@@ -384,6 +440,9 @@ public class Bucket {
                 }
                 buildArrayListFrom(s.substring(marker1+1, arrayEndVal+1), b);
                 a.add(b);
+                if (!finished) {
+                    buildArrayListFrom(s.substring(nextStarter, s.length()), a);
+                }
                 break;
 
             // case object
@@ -396,11 +455,17 @@ public class Bucket {
                 for (int i = marker1+1; i < s.length(); i++) {
                     if ('{' == s.charAt(i)) {
                         depth++;
-                    } else if ('}' == s.charAt(i)) {
+                    } else if ('}' == s.charAt(i) && depth >= 0) {
                         depth--;
                         if (depth < 0) {
                             objectEndVal = i;
+                        }
+                    } else if (depth < 0) {
+                        if (',' == s.charAt(i)) {
+                            nextStarter = i+1;
                             break;
+                        } else if (']' == s.charAt(i)) {
+                            finished = true;
                         }
                     }
                 }
@@ -410,6 +475,9 @@ public class Bucket {
 
                 Bucket innerBucket = new Bucket(s.substring(marker1+1, objectEndVal+1));
                 a.add(innerBucket);
+                if (!finished) {
+                    buildArrayListFrom(s.substring(nextStarter, s.length()), a);
+                }
                 break;
 
             default:
@@ -418,8 +486,16 @@ public class Bucket {
     }
 
     public void print() {
+        int i = 0;
         for (String key : this.keys) {
-            System.out.println(key);
+            System.out.println("KEY: " + key);
+            if (!(this.values.get(i) instanceof Bucket)) {
+                System.out.println("VALUE: " + this.values.get(i));
+            } else if (this.values.get(i) instanceof Bucket) {
+                System.out.print("VALUE: ");
+                ((Bucket) this.values.get(i)).print();
+            }
+            i++;
         }
     }
 }
