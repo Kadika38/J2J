@@ -7,6 +7,9 @@ public class Bucket {
     ArrayList<Object> values;
 
     public Bucket(String json) {
+        // For testing purposes
+        System.out.println(json);
+
         keys = new ArrayList<String>();
         values = new ArrayList<Object>();
 
@@ -36,7 +39,7 @@ public class Bucket {
             if (' ' == json.charAt(i) || '\n' == json.charAt(i)) {
                 continue;
             } else if ('}' == json.charAt(i)) {
-                check1 = true;
+                check2 = true;
             } else {
                 break;
             }
@@ -90,12 +93,17 @@ public class Bucket {
                     marker2type = true;
                 }
             } else if (marker1 != null && marker2 != null) {
-                a.add(json.substring(marker1, marker2));
-                if (marker2type) {
-                    getKeyValStrings(json.substring(marker2, json.length()-1), a);
-                } else {
-                    return;
-                }
+                break;
+            }
+        }
+        if (marker1 != null && marker2 != null) {
+            System.out.println("Adding to a: " + json.substring(marker1, marker2));
+            a.add(json.substring(marker1, marker2));
+            if (marker2type) {
+                System.out.println("Recursive call on: " + json.substring(marker2, json.length()-1));
+                getKeyValStrings(json.substring(marker2, json.length()-1), a);
+            } else {
+                return;
             }
         }
     }
@@ -406,6 +414,12 @@ public class Bucket {
 
             default:
                 throw new Error("Invalid JSON! Error while determining data type while reading value within an array.");
+        }
+    }
+
+    public void print() {
+        for (String key : this.keys) {
+            System.out.println(key);
         }
     }
 }

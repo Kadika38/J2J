@@ -162,3 +162,12 @@ private buildArrayListFrom(string s, arraylist a) {
             return;
         else throw error
 }
+
+public print() {
+    iterator = 0
+    for (key : keys) {
+        print key
+        print value at i in values
+        i++
+    }
+}
