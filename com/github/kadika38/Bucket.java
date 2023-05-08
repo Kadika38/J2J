@@ -7,15 +7,10 @@ public class Bucket {
     ArrayList<Object> values;
 
     public Bucket(String json) {
-        // For testing purposes
-        System.out.println(json);
-
         keys = new ArrayList<String>();
         values = new ArrayList<Object>();
 
         ArrayList<String> splitJson = splitJson(json);
-        //System.out.println("SPLIT JSON");
-        //System.out.println(splitJson);
 
         for (String s : splitJson) {
             addKeyFrom(s);
@@ -62,7 +57,6 @@ public class Bucket {
 
     // Recursively finds the key value strings in JSON and adds them to a passed in ArrayList
     private void getKeyValStrings(String json, ArrayList<String> a) {
-        System.out.println("Finding key val string in: " + json);
         // marker1 is the location of first " in the string
         Integer marker1 = null;
         // marker2 is the location of the end of this key value string (either an , or an })
@@ -100,10 +94,8 @@ public class Bucket {
             }
         }
         if (marker1 != null && marker2 != null) {
-            System.out.println("Adding to a: " + json.substring(marker1, marker2));
             a.add(json.substring(marker1, marker2));
             if (marker2type) {
-                System.out.println("Recursive call on: " + json.substring(marker2, json.length()));
                 getKeyValStrings(json.substring(marker2, json.length()), a);
             } else {
                 return;
@@ -221,7 +213,6 @@ public class Bucket {
 
             // case boolean
             case 3:
-                System.out.println("Reads a boolean.");
                 if ('t' == s.charAt(marker2) && 'r' == s.charAt(marker2+1) && 'u' == s.charAt(marker2+2) && 'e' == s.charAt(marker2+3)) {
                     this.values.add(true);
                 } else if ('f' == s.charAt(marker2) && 'a' == s.charAt(marker2+1) && 'l' == s.charAt(marker2+2) && 's' == s.charAt(marker2+3) && 'e' == s.charAt(marker2+4)) {
