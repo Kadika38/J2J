@@ -128,6 +128,7 @@ public class Bucket {
         this.keys.add(s.substring(marker1+1, marker2));
     }
 
+    // Finds the value held within the string, after the key
     private void addValFrom(String s) {
         // marker1 is the first : found outside of a string; this should come right after the key name
         Integer marker1 = null;
@@ -236,7 +237,7 @@ public class Bucket {
                     this.values.add(a);
                     break;
                 }
-                buildArrayListFrom(s.substring(marker2+1, arrayEndVal+1));
+                buildArrayListFrom(s.substring(marker2+1, arrayEndVal+1), a);
                 this.values.add(a);
                 break;
 
@@ -262,12 +263,149 @@ public class Bucket {
                     throw new Error("Invalid JSON! Closing } never found while reading object value.");
                 }
 
-                Bucket innerBucket = new Bucket(s.substring(marker1, objectEndVal+1));
+                Bucket innerBucket = new Bucket(s.substring(marker1+1, objectEndVal+1));
                 this.values.add(innerBucket);
                 break;
 
             default:
                 throw new Error("Value type error.");
+        }
+    }
+
+    private void buildArrayListFrom(String s, ArrayList<Object> a) {
+        // first must find the data type of the first item
+        // firstItemDataType: 1 == string | 2 == integer | 3 == boolean | 4 == array | 5 == object
+        Integer firstItemDataType = null;
+        // marker1 is the location of the opening character of the current value that is being read
+        Integer marker1 = null;
+
+        for (int i = 0; i < s.length(); i++) {
+            if (' ' == s.charAt(i) || '\n' == s.charAt(i)) {
+                continue;
+            } else if ('"' == s.charAt(i)) {
+                firstItemDataType = 1;
+                marker1 = i;
+                break;
+            } else if (Character.isDigit(s.charAt(i))) {
+                firstItemDataType = 2;
+                marker1 = i;
+                break;
+            } else if ('t' == s.charAt(i) || 'f' == s.charAt(i)) {
+                firstItemDataType = 3;
+                marker1 = i;
+                break;
+            } else if ('[' == s.charAt(i)) {
+                firstItemDataType = 4;
+                marker1 = i;
+                break;
+            } else if ('{' == s.charAt(i)) {
+                firstItemDataType = 5;
+                marker1 = i;
+                break;
+            }
+        }
+        if (firstItemDataType == null || marker1 == null) {
+            throw new Error("Invalid JSON!  Error while reading values within an array.");
+        }
+
+        switch (firstItemDataType) {
+            // case string
+            case 1:
+                Integer stringValEnd = null;
+                for (int i = marker1+1; i < s.length(); i++) {
+                    if ('"' == s.charAt(i)) {
+                        stringValEnd = i;
+                        break;
+                    }
+                }
+                if (stringValEnd == null) {
+                    throw new Error("Invalid JSON!  Error found while looking for string value within an array.");
+                }
+                a.add(s.substring(marker1+1, stringValEnd));
+                break;
+
+            // case integer
+            case 2:
+                Integer intValEnd = null;
+                for (int i = marker1+1; i < s.length(); i++) {
+                    if (Character.isDigit(s.charAt(i))) {
+                        intValEnd = i;
+                        continue;
+                    } else if (!Character.isDigit(s.charAt(i))) {
+                        break;
+                    }
+                }
+                if (intValEnd == null) {
+                    throw new Error("Invalid JSON!  Error found while looking for integer value within an array.");
+                }
+                try {
+                    a.add(Integer.parseInt(s.substring(marker1, intValEnd+1)));
+                } catch (NumberFormatException e) {
+                    throw new Error("Error while converting string to integer!");
+                }
+                break;
+
+            // case boolean
+            case 3:
+                if ('t' == s.charAt(marker1) && 'r' == s.charAt(marker1+1) && 'u' == s.charAt(marker1+2) && 'e' == s.charAt(marker1+3)) {
+                    a.add(true);
+                } else if ('f' == s.charAt(marker1) && 'a' == s.charAt(marker1+1) && 'l' == s.charAt(marker1+2) && 's' == s.charAt(marker1+3) && 'e' == s.charAt(marker1+4)) {
+                    a.add(false);
+                } else {
+                    throw new Error("Invalid JSON! Error while double checking true/false value within an array.");
+                }
+                break;
+
+            // case array
+            case 4:
+                Integer arrayEndVal = null;
+                for (int i = marker1+1; i < s.length(); i++) {
+                    if (']' == s.charAt(i)) {
+                        arrayEndVal = i;
+                        break;
+                    }
+                }
+                if (arrayEndVal == null) {
+                    throw new Error("Invalid JSON! Closing ] never found while reading array value within another array.");
+                }
+                ArrayList<Object> b = new ArrayList<Object>();
+                if (marker1+1 == arrayEndVal) {
+                    // empty array
+                    a.add(b);
+                    break;
+                }
+                buildArrayListFrom(s.substring(marker1+1, arrayEndVal+1), b);
+                a.add(b);
+                break;
+
+            // case object
+            case 5:
+                // depth is the current depth within inner objects (i.e. {}'s) of the iterator
+                int depth = 0;
+                
+                Integer objectEndVal = null;
+
+                for (int i = marker1+1; i < s.length(); i++) {
+                    if ('{' == s.charAt(i)) {
+                        depth++;
+                    } else if ('}' == s.charAt(i)) {
+                        depth--;
+                        if (depth < 0) {
+                            objectEndVal = i;
+                            break;
+                        }
+                    }
+                }
+                if (objectEndVal == null) {
+                    throw new Error("Invalid JSON! Closing } never found while reading object value within an array.");
+                }
+
+                Bucket innerBucket = new Bucket(s.substring(marker1+1, objectEndVal+1));
+                a.add(innerBucket);
+                break;
+
+            default:
+                throw new Error("Invalid JSON! Error while determining data type while reading value within an array.");
         }
     }
 }
