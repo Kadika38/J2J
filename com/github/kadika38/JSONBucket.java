@@ -43,6 +43,16 @@ public class JSONBucket {
         }
     }
 
+    // return true if key is contained in this bucket, false if not
+    public boolean containsKey(String key) {
+        for (String k : this.keys) {
+            if (k.equals(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         String looksLikeJson = "{";
