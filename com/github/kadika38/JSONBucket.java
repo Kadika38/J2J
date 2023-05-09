@@ -3,10 +3,12 @@ package com.github.kadika38;
 import java.util.ArrayList;
 
 public class JSONBucket {
+    String original;
     ArrayList<String> keys;
     ArrayList<Object> values;
 
     public JSONBucket(String json) {
+        this.original = json;
         keys = new ArrayList<String>();
         values = new ArrayList<Object>();
 
@@ -15,6 +17,27 @@ public class JSONBucket {
         for (String s : splitJson) {
             addKeyFrom(s);
             addValFrom(s);
+        }
+    }
+
+    // returns the original JSON that was passed into the constructor
+    public String getOriginalJSON() {
+        return this.original;
+    }
+
+    
+
+    public void print() {
+        int i = 0;
+        for (String key : this.keys) {
+            System.out.println("KEY: " + key);
+            if (!(this.values.get(i) instanceof JSONBucket)) {
+                System.out.println("VALUE: " + this.values.get(i));
+            } else if (this.values.get(i) instanceof JSONBucket) {
+                System.out.print("VALUE: ");
+                ((JSONBucket) this.values.get(i)).print();
+            }
+            i++;
         }
     }
 
@@ -473,20 +496,6 @@ public class JSONBucket {
 
             default:
                 throw new Error("Invalid JSON! Error while determining data type while reading value within an array.");
-        }
-    }
-
-    public void print() {
-        int i = 0;
-        for (String key : this.keys) {
-            System.out.println("KEY: " + key);
-            if (!(this.values.get(i) instanceof JSONBucket)) {
-                System.out.println("VALUE: " + this.values.get(i));
-            } else if (this.values.get(i) instanceof JSONBucket) {
-                System.out.print("VALUE: ");
-                ((JSONBucket) this.values.get(i)).print();
-            }
-            i++;
         }
     }
 }
