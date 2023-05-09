@@ -2,11 +2,11 @@ package com.github.kadika38;
 
 import java.util.ArrayList;
 
-public class Bucket {
+public class JSONBucket {
     ArrayList<String> keys;
     ArrayList<Object> values;
 
-    public Bucket(String json) {
+    public JSONBucket(String json) {
         keys = new ArrayList<String>();
         values = new ArrayList<Object>();
 
@@ -266,7 +266,7 @@ public class Bucket {
                     throw new Error("Invalid JSON! Closing } never found while reading object value.");
                 }
 
-                Bucket innerBucket = new Bucket(s.substring(marker1+1, objectEndVal+1));
+                JSONBucket innerBucket = new JSONBucket(s.substring(marker1+1, objectEndVal+1));
                 this.values.add(innerBucket);
                 break;
 
@@ -464,7 +464,7 @@ public class Bucket {
                     throw new Error("Invalid JSON! Closing } never found while reading object value within an array.");
                 }
 
-                Bucket innerBucket = new Bucket(s.substring(marker1+1, objectEndVal+1));
+                JSONBucket innerBucket = new JSONBucket(s.substring(marker1+1, objectEndVal+1));
                 a.add(innerBucket);
                 if (!finished) {
                     buildArrayListFrom(s.substring(nextStarter, s.length()), a);
@@ -480,11 +480,11 @@ public class Bucket {
         int i = 0;
         for (String key : this.keys) {
             System.out.println("KEY: " + key);
-            if (!(this.values.get(i) instanceof Bucket)) {
+            if (!(this.values.get(i) instanceof JSONBucket)) {
                 System.out.println("VALUE: " + this.values.get(i));
-            } else if (this.values.get(i) instanceof Bucket) {
+            } else if (this.values.get(i) instanceof JSONBucket) {
                 System.out.print("VALUE: ");
-                ((Bucket) this.values.get(i)).print();
+                ((JSONBucket) this.values.get(i)).print();
             }
             i++;
         }
