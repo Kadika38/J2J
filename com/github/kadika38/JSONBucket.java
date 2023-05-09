@@ -53,6 +53,22 @@ public class JSONBucket {
         return false;
     }
 
+    // Adds the specified key value pair to this JSONBucket
+    public void put(String key, Object value) {
+        this.keys.add(key);
+        this.values.add(value);
+    }
+
+    // Removes the first occurance of the specified key and it's associated value from this JSONBucket - does nothing if key wasn't present to begin with
+    public void remove(String key) {
+        if (!this.containsKey(key)) {
+            return;
+        }
+        Object value = this.getValue(key);
+        this.keys.remove(key);
+        this.values.remove(value);
+    }
+
     @Override
     public String toString() {
         String looksLikeJson = "{";
