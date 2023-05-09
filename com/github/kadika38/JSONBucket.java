@@ -25,20 +25,50 @@ public class JSONBucket {
         return this.original;
     }
 
-    
-
-    public void print() {
-        int i = 0;
-        for (String key : this.keys) {
-            System.out.println("KEY: " + key);
-            if (!(this.values.get(i) instanceof JSONBucket)) {
-                System.out.println("VALUE: " + this.values.get(i));
-            } else if (this.values.get(i) instanceof JSONBucket) {
-                System.out.print("VALUE: ");
-                ((JSONBucket) this.values.get(i)).print();
+    // The returns the associated value from the specified key
+    public Object getValue(String key) {
+        Integer i = 0;
+        boolean found = false;
+        for (String k : this.keys) {
+            if (key.equals(k)) {
+                found = true;
+                break;
             }
             i++;
         }
+        if (found) {
+            return this.values.get(i);
+        } else {
+            throw new Error("Key: \"" + key + "\" not found.");
+        }
+    }
+
+    @Override
+    public String toString() {
+        String looksLikeJson = "{";
+        boolean first = true;
+        for (String key : this.keys) {
+            if (!first) {
+                looksLikeJson += ",\n";
+            } else {
+                looksLikeJson += "\n";
+                first = false;
+            }
+            looksLikeJson += "  ";
+            looksLikeJson += key;
+            looksLikeJson += ": ";
+            if (this.getValue(key) instanceof JSONBucket) {
+                looksLikeJson += toStringHelper((JSONBucket)this.getValue(key), 2);
+            } else {
+                looksLikeJson += this.getValue(key);
+            }
+        }
+        looksLikeJson += "\n}";
+        return looksLikeJson;
+    }
+
+    public void print() {
+        System.out.println(this);
     }
 
     // Splits the input json into key value strings and returns them all in an ArrayList
@@ -497,5 +527,35 @@ public class JSONBucket {
             default:
                 throw new Error("Invalid JSON! Error while determining data type while reading value within an array.");
         }
+    }
+
+    // Used in toString() to adjust spacing for nested JSONBuckets - not necessary but improves readability
+    private String toStringHelper(JSONBucket bucket, int t) {
+        String looksLikeJson = "{";
+        boolean first = true;
+        for (String key : bucket.keys) {
+            if (!first) {
+                looksLikeJson += ",\n";
+            } else {
+                looksLikeJson += "\n";
+                first = false;
+            }
+            for (int i = t; i > 0; i--) {
+                looksLikeJson += "  ";
+            }
+            looksLikeJson += key;
+            looksLikeJson += ": ";
+            if (bucket.getValue(key) instanceof JSONBucket) {
+                looksLikeJson += toStringHelper((JSONBucket)bucket.getValue(key), t+1);
+            } else {
+                looksLikeJson += bucket.getValue(key);
+            }
+        }
+        looksLikeJson += "\n";
+        for (int i = t; i > 0; i--) {
+            looksLikeJson += "  ";
+        }
+        looksLikeJson += "}";
+        return looksLikeJson;
     }
 }

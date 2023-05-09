@@ -4,14 +4,14 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import com.github.kadika38.Bucket;
+import com.github.kadika38.JSONBucket;
 
 public class App {
 
     public static void main(String[] args) {
-        Bucket testBucket = new Bucket(getJson());
-        System.out.println("PRINTING BUCKET");
-        testBucket.print();
+        JSONBucket testBucket = new JSONBucket(getJson());
+        System.out.println(testBucket.getOriginalJSON());
+        System.out.println(testBucket.getValue("validity_checks"));
     }
 
     public static String getJson() {
