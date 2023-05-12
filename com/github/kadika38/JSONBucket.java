@@ -180,6 +180,13 @@ public class JSONBucket {
                 return;
             }
         }
+        if (marker1 == null) {
+            throw new Error("No opening \" found while looking for key");
+        } else if (marker2 == null) {
+            throw new Error("No closing \" found while looking for key");
+        }
+
+        throw new Error("Unkown exception occurred");
     }
 
     // Finds the key name within the string passed to it; assumes that the first set of characters surrounded by "" is the key name

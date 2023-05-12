@@ -9,9 +9,11 @@ import com.github.kadika38.JSONBucket;
 public class App {
 
     public static void main(String[] args) {
-        JSONBucket testBucket = new JSONBucket(getJson());
+        /* JSONBucket testBucket = new JSONBucket(getJson());
         System.out.println(testBucket.getOriginalJSON());
-        System.out.println(testBucket.getValue("validity_checks"));
+        System.out.println(testBucket.getValue("validity_checks")); */
+
+        JSONBucket testBadInputBucket = new JSONBucket("{Hello}");
     }
 
     public static String getJson() {
