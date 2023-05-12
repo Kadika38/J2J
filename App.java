@@ -13,11 +13,12 @@ public class App {
         System.out.println(testBucket.getOriginalJSON());
         System.out.println(testBucket.getValue("validity_checks")); */
 
-        JSONBucket testBadInputBucket = new JSONBucket("{Hello}");
+        JSONBucket testBucket2 = new JSONBucket(getJson());
+        testBucket2.print();
     }
 
     public static String getJson() {
-        String url = "https://api.nasa.gov/insight_weather/?api_key=DEMO_KEY&feedtype=json&ver=1.0";
+        String url = "https://api.nasa.gov/neo/rest/v1/feed?start_date=2015-09-07&end_date=2015-09-08&api_key=erINDupuY35TifPnTrNbzXgNhcoqE0nBPrMDvloc";
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
             .GET()
