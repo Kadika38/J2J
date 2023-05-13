@@ -554,11 +554,10 @@ public class JSONBucket {
                     }
                 }
                 if (objectEndVal == null) {
-                    System.out.println("Error about to be thrown, s (in buildarraylistfrom) = " + s);
                     throw new Error("Invalid JSON! Closing } never found while reading object value within an array.");
                 }
 
-                JSONBucket innerBucket = new JSONBucket(s.substring(marker1+1, objectEndVal+1));
+                JSONBucket innerBucket = new JSONBucket(s.substring(marker1, objectEndVal+1));
                 a.add(innerBucket);
                 if (!finished) {
                     buildArrayListFrom(s.substring(nextStarter, s.length()), a);
