@@ -308,11 +308,20 @@ public class JSONBucket {
 
             // case array
             case 4:
+                //depth is the current depth within nested arrays of the iterator
+                int arrayDepth = 0;
+
                 Integer arrayEndVal = null;
+
                 for (int i = marker2+1; i < s.length(); i++) {
-                    if (']' == s.charAt(i)) {
-                        arrayEndVal = i;
-                        break;
+                    if ('[' == s.charAt(i)) {
+                        arrayDepth++;
+                    } else if (']' == s.charAt(i)) {
+                        arrayDepth--;
+                        if (arrayDepth < 0) {
+                            arrayEndVal = i;
+                            break;
+                        }
                     }
                 }
                 if (arrayEndVal == null) {
@@ -331,16 +340,16 @@ public class JSONBucket {
             // case object
             case 5:
                 // depth is the current depth within inner objects (i.e. {}'s) of the iterator
-                int depth = 0;
+                int objectDepth = 0;
                 
                 Integer objectEndVal = null;
 
                 for (int i = marker2+1; i < s.length(); i++) {
                     if ('{' == s.charAt(i)) {
-                        depth++;
+                        objectDepth++;
                     } else if ('}' == s.charAt(i)) {
-                        depth--;
-                        if (depth < 0) {
+                        objectDepth--;
+                        if (objectDepth < 0) {
                             objectEndVal = i;
                             break;
                         }
@@ -545,6 +554,7 @@ public class JSONBucket {
                     }
                 }
                 if (objectEndVal == null) {
+                    System.out.println("Error about to be thrown, s (in buildarraylistfrom) = " + s);
                     throw new Error("Invalid JSON! Closing } never found while reading object value within an array.");
                 }
 
