@@ -278,7 +278,7 @@ public class JSONBucket {
             case 2:
                 Integer intValEnd = null;
                 for (int i = marker2+1; i < s.length(); i++) {
-                    if (Character.isDigit(s.charAt(i))) {
+                    if (Character.isDigit(s.charAt(i)) || '.' == s.charAt(i)) {
                         intValEnd = i;
                         continue;
                     } else if (!Character.isDigit(s.charAt(i))) {
