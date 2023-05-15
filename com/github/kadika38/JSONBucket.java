@@ -463,16 +463,24 @@ public class JSONBucket {
                     }
                 }
                 if (intValEnd == null) {
-                    System.out.println("Looking for int in: " + s);
                     throw new Error("Invalid JSON!  Error found while looking for integer value within an array.");
                 }
+                // Takes into account Integers, Floats, and Doubles
                 try {
                     a.add(Integer.parseInt(s.substring(marker1, intValEnd+1)));
-                    if (!finished) {
-                        buildArrayListFrom(s.substring(nextStarter, s.length()), a);
+                } catch (NumberFormatException eInt) {
+                    try {
+                        a.add(Float.parseFloat(s.substring(marker1, intValEnd+1)));
+                    } catch (NumberFormatException eFloat) {
+                        try {
+                            a.add(Double.parseDouble(s.substring(marker1, intValEnd+1)));
+                        } catch (NumberFormatException eDouble) {
+                            throw new Error("Invalid JSON!  Error while parsing number value to Integer, Float, or Double.");
+                        }
                     }
-                } catch (NumberFormatException e) {
-                    throw new Error("Error while converting string to integer!");
+                }
+                if (!finished) {
+                    buildArrayListFrom(s.substring(nextStarter, s.length()), a);
                 }
                 break;
 
