@@ -2,6 +2,8 @@ package com.github.kadika38;
 
 import java.util.ArrayList;
 
+import javax.security.auth.Subject;
+
 public class JSONBucket {
     String original;
     ArrayList<String> keys;
@@ -288,10 +290,19 @@ public class JSONBucket {
                 if (intValEnd == null) {
                     throw new Error("Invalid JSON!  Error found while looking for integer value.");
                 }
+                // Due to differences between Integers, Floats, and Doubles, we cascade through all three parse functions by catching the NumberFormatExceptions
                 try {
                     this.values.add(Integer.parseInt(s.substring(marker2, intValEnd+1)));
-                } catch (NumberFormatException e) {
-                    throw new Error("Error while converting string to integer!");
+                } catch (NumberFormatException eInt) {
+                    try {
+                        this.values.add(Float.parseFloat(s.substring(marker2, intValEnd+1)));
+                    } catch (NumberFormatException eFloat) {
+                        try {
+                            this.values.add(Double.parseDouble(s.substring(marker2, intValEnd+1)));
+                        } catch (NumberFormatException eDouble) {
+                            throw new Error("Invalid JSON!  Error while parsing number value to Integer, Float, or Double.");
+                        }
+                    }
                 }
                 break;
 
