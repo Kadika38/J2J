@@ -20,6 +20,13 @@ public class JSONBucket {
         }
     }
 
+    // Static method that instantiates and returns a JSONBucket (just for slightly different use cases)
+    // May delete later based on usage
+    public static JSONBucket build(String json) {
+        JSONBucket bucket = new JSONBucket(json);
+        return bucket;
+    }
+
     // returns the original JSON that was passed into the constructor
     public String getOriginalJSON() {
         return this.original;
