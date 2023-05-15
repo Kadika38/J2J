@@ -32,6 +32,12 @@ Constructor
 * Instantiates a JSONBucket from the JSON input
 * The input string will go through a validation process to check that it is valid JSON - an error will be thrown if it fails at any point
 
+build
+* static
+* Takes in a String "json"
+* Instantiates a new JSONBucket by passing the json String into the constructor, and returns it
+* Returns null if an error occurs
+
 getOriginalJSON
 * No input
 * Returns the original JSON that was passed to the constructor
