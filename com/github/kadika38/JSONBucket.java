@@ -223,7 +223,7 @@ public class JSONBucket {
         Integer marker1 = null;
         // self explanatory variable
         boolean iteratingWithinAString = false;
-        // valType is the data type of the value we find - used for a switch statement.  1 == string | 2 == int | 3 == boolean | 4 == array | 5 == object
+        // valType is the data type of the value we find - used for a switch statement.  1 == string | 2 == number | 3 == boolean | 4 == array | 5 == object
         Integer valType = null;
         // marker2 is the location of the start of the value
         Integer marker2 = null;
@@ -276,7 +276,7 @@ public class JSONBucket {
                 this.values.add(s.substring(marker2+1, stringValEnd));
                 break;
 
-            // case int
+            // case number
             case 2:
                 Integer intValEnd = null;
                 for (int i = marker2+1; i < s.length(); i++) {
@@ -381,7 +381,7 @@ public class JSONBucket {
 
     private void buildArrayListFrom(String s, ArrayList<Object> a) {
         // first must find the data type of the first item
-        // firstItemDataType: 1 == string | 2 == integer | 3 == boolean | 4 == array | 5 == object
+        // firstItemDataType: 1 == string | 2 == number | 3 == boolean | 4 == array | 5 == object
         Integer firstItemDataType = null;
         // marker1 is the location of the opening character of the current value that is being read
         Integer marker1 = null;
@@ -444,7 +444,7 @@ public class JSONBucket {
                 }
                 break;
 
-            // case integer
+            // case number
             case 2:
                 Integer intValEnd = null;
                 for (int i = marker1; i < s.length(); i++) {
