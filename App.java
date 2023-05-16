@@ -13,7 +13,7 @@ public class App {
         testBucket2.print(); */
 
         JSONBucket testBucket3 = JSONBucket.build(getJson());
-        testBucket3.print();
+        //testBucket3.print();
     }
 
     public static String getJson() {
